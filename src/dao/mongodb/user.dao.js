@@ -1,9 +1,9 @@
-import { UserModel } from "../models/user.model.js";
+import userModel from "../models/user.model.js";
 import MongoDao from "./mongo.dao.js";
 
 class UserDaoMongo extends MongoDao {
   constructor() {
-    super(UserModel);
+    super(userModel);
   }
 
   async register(user) {

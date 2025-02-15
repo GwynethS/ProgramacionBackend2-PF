@@ -1,6 +1,6 @@
 import { createHash, isValidPassword } from "../utils.js";
 import Services from "./service.manager.js";
-import { userDao } from "../daos/mongodb/user.dao.js";
+import { userDao } from "../dao/mongodb/user.dao.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { cartService } from "./cart.services.js";
