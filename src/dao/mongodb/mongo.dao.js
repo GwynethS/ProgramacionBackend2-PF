@@ -11,17 +11,17 @@ export default class MongoDAO {
     }
   }
 
-  async create(obj) {
+  async getById(id) {
     try {
-      return await this.model.create(obj);
+      return await this.model.findById(id);
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async getById(id) {
+  async create(obj) {
     try {
-      return await this.model.findById(id);
+      return await this.model.create(obj);
     } catch (error) {
       throw new Error(error);
     }
