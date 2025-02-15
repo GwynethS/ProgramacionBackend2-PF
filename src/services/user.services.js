@@ -17,7 +17,7 @@ class UserService extends Services {
       email: user.email,
       age: user.age,
       role: user.role,
-      cart: user.cart
+      cart: user.cart,
     };
 
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "20m" });
@@ -34,6 +34,7 @@ class UserService extends Services {
   register = async (user) => {
     try {
       const { email, password } = user;
+
       const existUser = await this.getUserByEmail(email);
       if (existUser) throw new Error("User already exists");
 
@@ -42,7 +43,7 @@ class UserService extends Services {
       const newUser = await this.dao.register({
         ...user,
         password: createHash(password),
-        cart: cartUser._id
+        cart: cartUser._id,
       });
 
       return newUser;
@@ -62,7 +63,7 @@ class UserService extends Services {
       const passValid = isValidPassword(password, userExist);
 
       if (!passValid) throw new Error("incorrect credentials");
-      
+
       return this.generateToken(userExist);
     } catch (error) {
       throw error;

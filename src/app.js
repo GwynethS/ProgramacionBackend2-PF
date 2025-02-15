@@ -8,6 +8,7 @@ import passport from "passport";
 import MongoStore from "connect-mongo";
 
 import "dotenv/config";
+import './passport/jwt.js';
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -15,6 +16,7 @@ const app = express();
 const storeConfig = {
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URL,
+    dbName: "Ecommerce", 
     crypto: { secret: process.env.SECRET_KEY },
     ttl: 180,
   }),
