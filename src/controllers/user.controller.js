@@ -28,7 +28,7 @@ class UserController extends Controllers {
 
   privateData = async (req, res, next) => {
     try {
-      const user = await this.service.getById(req.user._id);
+      const user = await this.service.getUserById(req.user._id);
 
       if (!user) throw new Error("Cant't get user data");
       res.json({
