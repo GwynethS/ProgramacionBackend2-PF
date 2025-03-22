@@ -1,14 +1,14 @@
 import Services from "./service.manager.js";
-import { cartDao } from "../dao/mongodb/cart.dao.js";
+import { cartRepository } from "../repositories/cart.repository.js";
 
 class CartServices extends Services {
   constructor() {
-    super(cartDao);
+    super(cartRepository);
   }
 
   createCart = async () => {
     try {
-      return await this.dao.create();
+      return await this.repository.createCart();
     } catch (error) {
       throw error;
     }
@@ -16,7 +16,7 @@ class CartServices extends Services {
 
   clearCart = async (cartId) => {
     try {
-      return await this.dao.clearCart(cartId);
+      return await this.repository.clearCart(cartId);
     } catch (error) {
       throw error;
     }
@@ -24,7 +24,7 @@ class CartServices extends Services {
 
   addProdToCart = async (cartId, prodId) => {
     try {
-      return await this.dao.addProdToCart(cartId, prodId);
+      return await this.repository.addProductToCart(cartId, prodId);
     } catch (error) {
       throw error;
     }
@@ -32,7 +32,7 @@ class CartServices extends Services {
 
   updateProdQuantityToCart = async (cartId, prodId, quantity) => {
     try {
-      return await this.dao.updateProdQuantityToCart(cartId, prodId, quantity);
+      return await this.repository.updateProductQuantity(cartId, prodId, quantity);
     } catch (error) {
       throw error;
     }
@@ -40,7 +40,7 @@ class CartServices extends Services {
 
   removeProdToCart = async (cartId, prodId) => {
     try {
-      return await this.dao.removeProdToCart(cartId, prodId);
+      return await this.repository.removeProductFromCart(cartId, prodId);
     } catch (error) {
       throw error;
     }

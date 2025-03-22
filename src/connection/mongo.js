@@ -5,7 +5,7 @@ dotenv.config()
 
 export const mongoConnection = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL, { dbName: "Ecommerce" });
+    await mongoose.connect(process.env.MONGO_URL, { dbName: "Ecommerce2" });
 
     console.log("Connected to DB successfully");
   } catch (e) {

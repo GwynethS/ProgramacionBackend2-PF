@@ -12,6 +12,16 @@ class UserService extends Services {
     super(userRepository);
   }
 
+  getUserById = async (id) => {
+    try {
+      const user = await this.repository.getUserById(id);
+      if (!user) throw new Error(`User with ID ${id} not found`);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   generateToken = (user) => {
     const payload = UserDTO.getUserTokenFrom(user);
 

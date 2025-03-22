@@ -1,9 +1,10 @@
 import express from "express";
 import session from 'express-session'
 import cookieParser from "cookie-parser";
-import userRouter from "./routes/userRouter.js";
+import userRouter from "./routes/user.router.js";
+import productRouter from "./routes/product.router.js";
 import { mongoConnection } from "./connection/mongo.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
+import  errorHandler  from "./middlewares/errorHandler.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 
@@ -36,8 +37,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 
-app.use(errorHandler);
+app.use(errorHandler); 
 
 mongoConnection();
 

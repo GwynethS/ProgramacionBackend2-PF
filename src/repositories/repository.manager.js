@@ -12,7 +12,7 @@ export default class Repositories {
   };
 
   create = (doc) => {
-    return this.dao.save(doc);
+    return this.dao.create(doc);
   };
 
   update = (id, doc) => {
