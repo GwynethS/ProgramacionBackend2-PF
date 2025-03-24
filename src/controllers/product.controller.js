@@ -6,12 +6,21 @@ import EErrors from "../services/errors/enum.js";
 class ProductController extends Controllers {
   constructor() {
     super(productService);
-    console.log(productService);
+  }
+
+  getById =  async(req, res, next) => {
+    try {
+      const { id } = req.params;
+      const response = await this.service.getById(id);
+
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 
   create = async (req, res, next) => {
     try {
-      console.log(this.service);
       const { name, description, price, stock } = req.body;
 
       if (!name || !description || !price || !stock) {
@@ -32,23 +41,48 @@ class ProductController extends Controllers {
     }
   }
 
-  getById =  async(req, res, next) => {
+  update = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const response = await this.service.getById(id);
+      const productData = req.body;
 
-      if (!response) {
-        return next(
-          CustomError.createError({
-            name: "ProductNotFoundError",
-            cause: `Product with ID ${id} not found.`,
-            message: "Product not found",
-            code: EErrors.NOT_FOUND,
-          })
-        );
-      }
+      const product = await this.service.getById(id);
 
-      res.json(response);
+    if (!product) {
+      throw CustomError.createError({
+        name: "ProductNotFoundError",
+        cause: `Product with ID ${id} not found.`,
+        message: "Product not found",
+        code: EErrors.NOT_FOUND,
+      });
+    }
+
+      const response = await this.service.update(id, productData);
+
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  delete = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      const product = await this.service.getById(id);
+
+    if (!product) {
+      throw CustomError.createError({
+        name: "ProductNotFoundError",
+        cause: `Product with ID ${id} not found.`,
+        message: "Product not found",
+        code: EErrors.NOT_FOUND,
+      });
+    }
+
+      const response = await this.service.delete(id);
+
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }

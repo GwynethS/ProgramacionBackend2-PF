@@ -5,19 +5,18 @@ class ProductService extends Services {
     super(productRepository);
   }
 
-  async create(productData) {
-    try {
-      const newProduct = await this.repository.create(productData);
-
-      return newProduct;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async getById(id) {
     try {
       const product = await this.repository.getProductById(id);
+
+      if (!product) {
+        throw CustomError.createError({
+          name: "ProductNotFoundError",
+          cause: `Product with ID ${id} not found.`,
+          message: "Product not found",
+          code: EErrors.NOT_FOUND,
+        });
+      }
 
       return product;
     } catch (error) {

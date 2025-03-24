@@ -1,17 +1,17 @@
 export default class ProductDTO {
   static getProductFrom = (product) => {
     return {
-      nombre: product.name,
-      descripcion: product.description,
-      precio: product.price,
-      disponibilidad: product.stock,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
     };
   };
   static getProductResponseFrom = (product) => {
     return {
-      nombre: product.name,
-      precio: product.price,
-      disponibilidad: product.stock,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
     };
   };
 }

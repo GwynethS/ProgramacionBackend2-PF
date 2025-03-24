@@ -3,23 +3,23 @@ export default class Repositories {
     this.dao = dao;
   }
 
-  getAll = (params) => {
+  async getAll(params) {
     return this.dao.get(params);
-  };
+  }
 
-  getBy = (params) => {
+  async getBy(params) {
     return this.dao.getBy(params);
-  };
+  }
 
-  create = (doc) => {
+  async create (doc) {
     return this.dao.create(doc);
   };
 
-  update = (id, doc) => {
+  async update (id, doc) {
     return this.dao.update(id, doc);
   };
 
-  delete = (id) => {
+  async delete (id) {
     return this.dao.delete(id);
   };
 }
