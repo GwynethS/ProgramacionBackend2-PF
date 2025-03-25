@@ -6,7 +6,7 @@ class CartDaoMongoDB extends MongoDao {
     super(CartModel);
   }
 
-  async getById(id) {
+  async getCartById(id) {
     try {
       return await this.model.findById(id).populate("products.product");
     } catch (error) {
@@ -26,114 +26,117 @@ class CartDaoMongoDB extends MongoDao {
 
   async update(id, obj) {
     try {
-      const response = await this.model.findByIdAndUpdate(id, obj, {
-        new: true,
-      });
+      const response = await this.model
+        .findByIdAndUpdate(id, obj, {
+          new: true,
+        })
+        .populate("products.product");
+
       return response;
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async clearCart(cartId) {
-    try {
-      const updatedCart = await this.model
-        .findByIdAndUpdate(cartId, { $set: { products: [] } }, { new: true })
-        .populate("products.product");
+  // async clearCart(cartId) {
+  //   try {
+  //     const updatedCart = await this.model
+  //       .findByIdAndUpdate(cartId, { $set: { products: [] } }, { new: true })
+  //       .populate("products.product");
 
-      if (!updatedCart) throw new Error("Cart not found");
+  //     if (!updatedCart) throw new Error("Cart not found");
 
-      return updatedCart;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return updatedCart;
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
 
-  async addProdToCart(cartId, prodId) {
-    try {
-      const cart = await this.model.findById(cartId);
-      const product = await ProductModel.findById(prodId);
+  // async addProdToCart(cartId, prodId) {
+  //   try {
+  //     const cart = await this.model.findById(cartId);
+  //     const product = await ProductModel.findById(prodId);
 
-      if (!cart) throw new Error("Cart not found");
+  //     if (!cart) throw new Error("Cart not found");
 
-      if (!product) throw new Error("Product not found");
+  //     if (!product) throw new Error("Product not found");
 
-      const existingProduct = cart["products"].find(
-        (p) => p["product"].toString() === prodId
-      );
+  //     const existingProduct = cart["products"].find(
+  //       (p) => p["product"].toString() === prodId
+  //     );
 
-      if (!existingProduct) {
-        const insertProduct = {
-          product: prodId,
-          quantity: 1,
-        };
+  //     if (!existingProduct) {
+  //       const insertProduct = {
+  //         product: prodId,
+  //         quantity: 1,
+  //       };
 
-        cart["products"].push(insertProduct);
-      } else {
-        existingProduct.quantity += 1;
-      }
+  //       cart["products"].push(insertProduct);
+  //     } else {
+  //       existingProduct.quantity += 1;
+  //     }
 
-      const updatedCart = await this.model
-        .findByIdAndUpdate(cartId, cart, { new: true })
-        .populate("products.product");
+  //     const updatedCart = await this.model
+  //       .findByIdAndUpdate(cartId, cart, { new: true })
+  //       .populate("products.product");
 
-      return updatedCart;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return updatedCart;
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
 
-  async updateProdQuantityToCart(cartId, prodId, quantity) {
-    try {
-      const cart = await this.model.findById(cartId);
-      const product = await ProductModel.findById(prodId);
+  // async updateProdQuantityToCart(cartId, prodId, quantity) {
+  //   try {
+  //     const cart = await this.model.findById(cartId);
+  //     const product = await ProductModel.findById(prodId);
 
-      if (!cart) throw new Error("Cart not found");
+  //     if (!cart) throw new Error("Cart not found");
 
-      if (!product) throw new Error("Product not found");
+  //     if (!product) throw new Error("Product not found");
 
-      const existingProduct = cart["products"].find(
-        (p) => p["product"].toString() === prodId
-      );
+  //     const existingProduct = cart["products"].find(
+  //       (p) => p["product"].toString() === prodId
+  //     );
 
-      if (!existingProduct) {
-        const insertProduct = {
-          product: prodId,
-          quantity,
-        };
+  //     if (!existingProduct) {
+  //       const insertProduct = {
+  //         product: prodId,
+  //         quantity,
+  //       };
 
-        cart["products"].push(insertProduct);
-      } else {
-        existingProduct.quantity = quantity;
-      }
+  //       cart["products"].push(insertProduct);
+  //     } else {
+  //       existingProduct.quantity = quantity;
+  //     }
 
-      const updatedCart = await this.model
-        .findByIdAndUpdate(cartId, cart, { new: true })
-        .populate("products.product");
+  //     const updatedCart = await this.model
+  //       .findByIdAndUpdate(cartId, cart, { new: true })
+  //       .populate("products.product");
 
-      return updatedCart;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return updatedCart;
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
 
-  async removeProdToCart(cartId, prodId) {
-    try {
-      const updatedCart = await this.model
-        .findByIdAndUpdate(
-          cartId,
-          { $pull: { products: { product: prodId } } },
-          { new: true }
-        )
-        .populate("products.product");
+  // async removeProdToCart(cartId, prodId) {
+  //   try {
+  //     const updatedCart = await this.model
+  //       .findByIdAndUpdate(
+  //         cartId,
+  //         { $pull: { products: { product: prodId } } },
+  //         { new: true }
+  //       )
+  //       .populate("products.product");
 
-      if (!updatedCart) throw new Error("Cart not found");
+  //     if (!updatedCart) throw new Error("Cart not found");
 
-      return updatedCart;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     return updatedCart;
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
 }
 
 export const cartDao = new CartDaoMongoDB();

@@ -10,8 +10,8 @@ class ProductController extends Controllers {
 
   getById =  async(req, res, next) => {
     try {
-      const { id } = req.params;
-      const response = await this.service.getById(id);
+      const { pid } = req.params;
+      const response = await this.service.getById(pid);
 
       res.json(response);
     } catch (error) {
@@ -43,21 +43,21 @@ class ProductController extends Controllers {
 
   update = async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { pid } = req.params;
       const productData = req.body;
 
-      const product = await this.service.getById(id);
+      const product = await this.service.getById(pid);
 
     if (!product) {
       throw CustomError.createError({
         name: "ProductNotFoundError",
-        cause: `Product with ID ${id} not found.`,
+        cause: `Product with ID ${pid} not found.`,
         message: "Product not found",
         code: EErrors.NOT_FOUND,
       });
     }
 
-      const response = await this.service.update(id, productData);
+      const response = await this.service.update(pid, productData);
 
       res.status(201).json(response);
     } catch (error) {
@@ -67,22 +67,22 @@ class ProductController extends Controllers {
 
   delete = async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { pid } = req.params;
 
-      const product = await this.service.getById(id);
+      const product = await this.service.getById(pid);
 
     if (!product) {
       throw CustomError.createError({
         name: "ProductNotFoundError",
-        cause: `Product with ID ${id} not found.`,
+        cause: `Product with ID ${pid} not found.`,
         message: "Product not found",
         code: EErrors.NOT_FOUND,
       });
     }
 
-      const response = await this.service.delete(id);
+      const response = await this.service.delete(pid);
 
-      res.status(201).json(response);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }

@@ -3,6 +3,7 @@ import session from 'express-session'
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.router.js";
 import productRouter from "./routes/product.router.js";
+import cartRouter from "./routes/cart.router.js";
 import { mongoConnection } from "./connection/mongo.js";
 import  errorHandler  from "./middlewares/errorHandler.js";
 import passport from "passport";
@@ -38,6 +39,7 @@ app.use(passport.session());
 
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
+app.use("/api/carts", cartRouter);
 
 app.use(errorHandler); 
 
