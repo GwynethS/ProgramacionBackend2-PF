@@ -18,7 +18,7 @@ const app = express();
 const storeConfig = {
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URL,
-    dbName: "Ecommerce", 
+    dbName: "Ecommerce2", 
     crypto: { secret: process.env.SECRET_KEY },
     ttl: 180,
   }),
