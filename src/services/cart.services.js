@@ -3,6 +3,7 @@ import { cartRepository } from "../repositories/cart.repository.js";
 import CustomError from "./errors/custom-error.js";
 import EErrors from "./errors/enum.js";
 import { productRepository } from "../repositories/product.repository.js";
+import { ticketRepository } from "../repositories/ticket.repostiory.js";
 
 class CartServices extends Services {
   constructor() {
@@ -134,6 +135,74 @@ class CartServices extends Services {
       );
 
       return await this.update(cartId, cart);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  purchaseCart = async (cartId, purchaserEmail) => {
+    try {
+      const cart = await this.repository.getCartById(cartId);
+      if (!cart)
+        throw CustomError.createError({
+          name: "CartNotFoundError",
+          cause: `Cart with ID ${cartId} not found.`,
+          message: "Cart not found",
+          code: EErrors.NOT_FOUND,
+        });
+
+      let totalAmount = 0;
+      const productsNotProcessed = [];
+
+      const purchasedProducts = [];
+
+      for (const item of cart.products) {
+        const product = await productRepository.getBy({
+          _id: item.product._id,
+        });
+
+        if (!product) {
+          productsNotProcessed.push(item.product._id);
+          continue;
+        }
+
+        if (product.stock >= item.quantity) {
+          product.stock -= item.quantity;
+
+          await productRepository.update(product._id, {
+            stock: product.stock,
+          });
+
+          totalAmount += product.price * item.quantity;
+
+          purchasedProducts.push(item.product._id);
+        } else {
+          productsNotProcessed.push(item.product._id);
+        }
+      }
+
+      if (totalAmount > 0) {
+        const ticket = await ticketRepository.create({
+          amount: totalAmount,
+          purchaser: purchaserEmail,
+        });
+
+        cart.products = cart.products.filter((item) =>
+          productsNotProcessed.includes(item.product._id)
+        );
+        await cartRepository.update(cartId, cart);
+
+        return {
+          message: "Purchase completed",
+          ticket,
+          notProcessed: productsNotProcessed,
+        };
+      }
+
+      return {
+        message: "No products were purchased due to insufficient stock",
+        notProcessed: productsNotProcessed,
+      };
     } catch (error) {
       throw error;
     }

@@ -72,6 +72,18 @@ class CartController extends Controllers {
       next(error);
     }
   };
+
+  purchaseCart = async (req, res, next) => {
+    try {
+      const { cid } = req.params;
+      const { user } = req;
+
+      const response = await this.service.purchaseCart(cid, user.email);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const cartController = new CartController();

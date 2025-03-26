@@ -7,8 +7,10 @@ import { validateCartOwner } from "../middlewares/validateCartOwner.js";
 const router = Router();
 
 router.get("/:cid", cartController.getCartById);
+
 router.post("/", cartController.createCart);
 router.delete("/:cid", cartController.clearCart);
+
 router.post(
   "/:cid/products/:pid",
   passportCall("current"),
@@ -27,5 +29,8 @@ router.delete(
   roleAuth("user"), validateCartOwner,
   cartController.removeProdToCart
 );
+
+router.post("/:cid/purchase", passportCall("current"),
+roleAuth("user"), validateCartOwner, cartController.purchaseCart);
 
 export default router;

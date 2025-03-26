@@ -11,9 +11,9 @@ export default class MongoDAO {
     }
   }
 
-  async getById(id) {
+  async getBy(params) {
     try {
-      return await this.model.findById(id);
+      return await this.model.findOne(params);
     } catch (error) {
       throw new Error(error);
     }
