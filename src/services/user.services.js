@@ -1,11 +1,14 @@
 import { createHash, isValidPassword } from "../utils.js";
 import Services from "./service.manager.js";
 import { userRepository } from "../repositories/user.repository.js";
+import { cartService } from "./cart.services.js";
+import { emailService } from "./email.services.js";
+import UserDTO from "../dto/user.dto.js";
+import CustomError from "./errors/custom-error.js";
+import EErrors from "./errors/enum.js";
+
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { cartService } from "./cart.services.js";
-import UserDTO from "../dto/user.dto.js";
-
 
 class UserService extends Services {
   constructor() {
@@ -15,7 +18,29 @@ class UserService extends Services {
   getUserById = async (id) => {
     try {
       const user = await this.repository.getUserById(id);
-      if (!user) throw new Error(`User with ID ${id} not found`);
+      if (!user)
+        throw CustomError.createError({
+          name: "UserNotFoundError",
+          cause: `User with ID ${id} not found.`,
+          message: "User not found",
+          code: EErrors.NOT_FOUND,
+        });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getUserByEmail = async (email) => {
+    try {
+      const user = await this.repository.getUserByEmail(email);
+      if (!user)
+        throw CustomError.createError({
+          name: "UserNotFoundError",
+          cause: `User with Email ${email} not found.`,
+          message: "User not found",
+          code: EErrors.NOT_FOUND,
+        });
       return user;
     } catch (error) {
       throw error;
@@ -26,6 +51,10 @@ class UserService extends Services {
     const payload = UserDTO.getUserTokenFrom(user);
 
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "20m" });
+  };
+
+  generateResetToken = (email) => {
+    return jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: "1h" });
   };
 
   register = async (user) => {
@@ -55,7 +84,13 @@ class UserService extends Services {
 
       const userExist = await this.repository.getUserByEmail(email);
 
-      if (!userExist) throw new Error("User not found");
+      if (!userExist)
+        throw CustomError.createError({
+          name: "UserNotFoundError",
+          cause: `User with Email ${email} not found.`,
+          message: "User not found",
+          code: EErrors.NOT_FOUND,
+        });
 
       const passValid = isValidPassword(password, userExist);
 
@@ -67,66 +102,59 @@ class UserService extends Services {
     }
   };
 
-  // generateToken = (user) => {
-  //   const payload = {
-  //     _id: user._id,
-  //     // first_name: user.first_name,
-  //     // last_name: user.last_name,
-  //     // email: user.email,
-  //     // age: user.age,
-  //     // role: user.role,
-  //     // cart: user.cart,
-  //   };
+  forgotPassword = async (email) => {
+    try {
+      const user = await this.repository.getUserByEmail(email);
+      if (!user)
+        throw CustomError.createError({
+          name: "UserNotFoundError",
+          cause: `User with Email ${email} not found.`,
+          message: "User not found",
+          code: EErrors.NOT_FOUND,
+        });
 
-  //   return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "20m" });
-  // };
+      const resetToken = this.generateResetToken(email);
 
-  // getUserByEmail = async (email) => {
-  //   try {
-  //     return await this.dao.getByEmail(email);
-  //   } catch (error) {
-  //     throw new Error(error);
-  //   }
-  // };
+      const resetLink = `http://localhost:${process.env.PORT}/reset-password`;
+      await emailService.sendEmail(
+        email,
+        "Recuperación de Contraseña",
+        `<p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p>
+          <a href="${resetLink}">Restablecer Contraseña</a>
+          <p>Este enlace expirará en 1 hora.</p>`
+      );
 
-  // register = async (user) => {
-  //   try {
-  //     const { email, password } = user;
+      return resetToken;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-  //     const existUser = await this.getUserByEmail(email);
-  //     if (existUser) throw new Error("User already exists");
+  resetPassword = async (email, newPassword) => {
+    try {
+      const user = await this.repository.getUserByEmail(email);
+      if (!user)
+        throw CustomError.createError({
+          name: "UserNotFoundError",
+          cause: `User with Email ${email} not found.`,
+          message: "User not found",
+          code: EErrors.NOT_FOUND,
+        });
 
-  //     const cartUser = await cartService.createCart();
+      const samePassword = isValidPassword(newPassword, user);
 
-  //     const newUser = await this.dao.register({
-  //       ...user,
-  //       password: createHash(password),
-  //       cart: cartUser._id,
-  //     });
+      if (samePassword)
+        throw new Error("New password can't be the same as the old one");
 
-  //     return newUser;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
+      user.password = createHash(newPassword);
 
-  // login = async (user) => {
-  //   try {
-  //     const { email, password } = user;
+      const updatedUser = await this.repository.update(user._id, user);
 
-  //     const userExist = await this.getUserByEmail(email);
-
-  //     if (!userExist) throw new Error("User not found");
-
-  //     const passValid = isValidPassword(password, userExist);
-
-  //     if (!passValid) throw new Error("incorrect credentials");
-
-  //     return this.generateToken(userExist);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 export const userService = new UserService();

@@ -14,3 +14,18 @@ export const passportCall = (strategy) => {
     })(req, res, next);
   };
 };
+
+
+export const passportCallReset = () => {
+  return async (req, res, next) => {
+    passport.authenticate("reset", (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        return res.status(401).json({ error: info.messages ? info.messages : "Unauthorized" });
+      }
+
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
+};

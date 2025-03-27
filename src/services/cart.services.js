@@ -1,9 +1,9 @@
 import Services from "./service.manager.js";
 import { cartRepository } from "../repositories/cart.repository.js";
-import CustomError from "./errors/custom-error.js";
-import EErrors from "./errors/enum.js";
 import { productRepository } from "../repositories/product.repository.js";
 import { ticketRepository } from "../repositories/ticket.repostiory.js";
+import CustomError from "./errors/custom-error.js";
+import EErrors from "./errors/enum.js";
 
 class CartServices extends Services {
   constructor() {
