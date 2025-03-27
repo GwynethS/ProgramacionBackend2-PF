@@ -2,6 +2,7 @@ import Controllers from "./controller.manager.js";
 import { userService } from "../services/user.services.js";
 import CustomError from "../services/errors/custom-error.js";
 import EErrors from "../services/errors/enum.js";
+import UserDTO from "../dto/user.dto.js";
 
 class UserController extends Controllers {
   constructor() {
@@ -69,7 +70,9 @@ class UserController extends Controllers {
         );
       }
 
-      res.json({ user });
+      const safeUser = UserDTO.getSafeUserData(user);
+
+      res.json({ user: safeUser });
     } catch (error) {
       next(error);
     }

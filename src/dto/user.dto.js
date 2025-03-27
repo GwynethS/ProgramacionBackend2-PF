@@ -7,4 +7,12 @@ export default class UserDTO {
       email: user.email,
     };
   };
+
+  static getSafeUserData = (user) => {
+    return {
+      name: user.name,
+      role: user.role,
+      email: user.email,
+    };
+  };
 }
